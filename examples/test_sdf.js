@@ -18,10 +18,16 @@ function Box(props){
     </model>
 }
 
+function box(){
+    return <a></a>
+}
+
 
 export default function Model(){
     return<sdf version="1.5">
         {/* <Box name='' /> */}
         <Box name='b' />
+        {/* <box></box> */}
+        <dox></dox>
     </sdf>
 }

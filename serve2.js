@@ -1,6 +1,17 @@
 
 import React from "react";
 
+const consoleWarn = console.warn;
+const SUPPRESSED_WARNINGS = ['Each child in a list'];
+
+console.warn = function filterWarnings(msg, ...args) {
+    console.log('warnllll',msg)
+    if (!SUPPRESSED_WARNINGS.some((entry) => msg.includes(entry))) {
+        consoleWarn(msg, ...args);
+    }
+};
+
+
 global.React = React;
 
 const _createConext = React.createContext
@@ -38,13 +49,20 @@ if('ext' in argv)
     argv.e = argv.ext
 const ext = 'e' in argv ? argv.e : 'xml'
 
+
 import(input_file).then(module => {
     // console.log(module)
+    async function parse(){
     const App = module.default
-    // console.log('App',App())
-    const AppObj = <App/>
-    const rootTag = AppObj.type(AppObj.props).type
-    // console.log(rootTag)
+    console.log(App,'||', typeof(App),'||',App(),'||',<App/>)
+    // const AppObj = <App/>
+    // App().then(obj=>{
+    //     console.log(obj.type)
+    // })
+    // const rootTag = AppObj.type(AppObj.props).type
+    const rootTag = (await App()).type
+    // const rootTag = 'a'
+    // console.log('out',rootTag)
     // console.log(<App/>)
     const builder = new XMLBuilder({
         ignoreAttributes: false,
@@ -68,24 +86,45 @@ import(input_file).then(module => {
     const isContext = (nodeType)=>_.isObject(nodeType) 
         && '_context' in nodeType
 
+    async function hdlChildren(children,parent,ctx){
+        // console.log('\\\\','\n',children)
+        if(_.isString(children) || _.isNumber(children))
+            parent.push({'#text': children.toString()})
+        else if(_.isArray(children))
+            // must use for loop here. map or foreach does not work.
+            // They will not await for the execution of the current
+            // function before executing the next.
+            for(const child of children){
+                await hdlChildren(child,parent,ctx)
+            }
+        else
+            await iter(children,parent,ctx)
+}
     
-    function iter(node,parent,ctx){
+    async function iter(node,parent,ctx){
         // console.log('===========================================')
         // console.log(node.type,'||',typeof(node.type),'||'
         // ,node.props,ctx,typeof(ctx))
+
+        if(_.isArray(node)){
+            node.map(x=>iter(x,parent,ctx))
+            return
+        }
     
         if(!_.isFunction(node.type)){
             if(_.isSymbol(node.type) || isContext(node.type)){
                 if(isContext(node.type))
                     node.type._context.vals.push(node.props.value)
 
-                if('children' in node.props && 
-                    !_.isString(node.props.children)){
-                    if(_.isArray(node.props.children))
-                        node.props.children.map(x=>iter(x,parent,ctx))
-                    else
-                        iter(node.props.children,parent,ctx)
-                }
+                if('children' in node.props)
+                    await hdlChildren(node.props.children,parent,ctx)
+                // if('children' in node.props && 
+                //     !_.isString(node.props.children)){
+                //     if(_.isArray(node.props.children))
+                //         node.props.children.map(x=>iter(x,parent,ctx))
+                //     else
+                //         iter(node.props.children,parent,ctx)
+                // }
 
                 if(isContext(node.type))
                     node.type._context.vals.pop()
@@ -111,33 +150,32 @@ import(input_file).then(module => {
                         item[':@'][`@_${key}`] = val
                     }
                     if('children' in node.props ){
-                        // function handleChild(arr,child){
-
-                        // }
-                        if(_.isString(node.props.children) ||
-                            _.isNumber(node.props.children)){
-                            item[node.type].push(
-                                {'#text': node.props.children.toString()})
-                        }else if(_.isArray(node.props.children))
-                            if(_.some(node.props.children,
-                                x=>!(_.isObject(x) && 'type' in x)))
-                                item[node.type].push(
-                                    {'#text': node.props.children.join(' ')})
-                            else
-                                node.props.children.map(x=>iter(x,item[node.type],ctx))
-                        else
-                            iter(node.props.children,item[node.type],ctx)
+                        await hdlChildren(node.props.children,
+                            item[node.type],ctx)
+                        // if(_.isString(node.props.children) ||
+                        //     _.isNumber(node.props.children)){
+                        //     item[node.type].push(
+                        //         {'#text': node.props.children.toString()})
+                        // }else if(_.isArray(node.props.children))
+                        //     if(_.some(node.props.children,
+                        //         x=>!(_.isObject(x) && 'type' in x)))
+                        //         item[node.type].push(
+                        //             {'#text': node.props.children.join(' ')})
+                        //     else
+                        //         node.props.children.map(x=>iter(x,item[node.type],ctx))
+                        // else
+                        //     iter(node.props.children,item[node.type],ctx)
                     }
                 }
                 parent.push(item)
             }
             // console.log(node.type)
         }else
-            iter(node.type(node.props),parent,
+            await iter(await node.type(node.props),parent,
                 node.props.name)
     }
     
-    iter(<App/>,root)
+    await iter(<App/>,root)
     // console.log(JSON.stringify(root))
     // console.log(builder.build(root))
     
@@ -153,10 +191,12 @@ import(input_file).then(module => {
     const xml = builder.build(root)
     // console.log(xml)
     let wstr = xmlFormat(xml,{
-        'collapseContent': true
+        'collapseContent': true,
+        'forceSelfClosingEmptyTag': true,
     })
     if(rootTag === 'sdf')
         wstr = '<?xml version="1.0" ?>\n'+wstr
+    wstr = wstr.replaceAll('<newline/>','')
     fs.writeFileSync(path.join(pathInfo.dir,
         `${pathInfo.name}.${ext}`), wstr);
 
@@ -176,7 +216,8 @@ import(input_file).then(module => {
     //   });
     // const result = parser.parse(xmlData);
     // console.log(JSON.stringify(result))
-    
+    }
+    parse()
 })
 
 }
