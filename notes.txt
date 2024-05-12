@@ -1,0 +1,5 @@
+Outline > Problems: Enabled 
+uncheck
+
+Problems: Visibility
+uncheck
