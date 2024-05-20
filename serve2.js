@@ -51,9 +51,10 @@ const ext = 'e' in argv ? argv.e : 'xml'
 
 
 import(input_file).then(module => {
-    // console.log(module)
+    console.log(module)
     async function parse(){
-    const App = module.default
+    const App = _.values(module)
+                .filter(x=>_.isFunction(x))[0]
     console.log(App,'||', typeof(App),'||',App(),'||',<App/>)
     // const AppObj = <App/>
     // App().then(obj=>{
@@ -133,14 +134,23 @@ import(input_file).then(module => {
             }else{
                 // if(!parent[node.type])
                 //     parent[node.type] = []
+                const props = node.props ? {...node.props} : {}
+                if(module.defaults && (node.type in module.defaults)){
+                    for(const key in module.defaults[node.type]){
+                        if(key in props) continue
+                        props[key] = 
+                            module.defaults[node.type][key]
+                    }
+                    // console.log(props)
+                }
                 const item = {}
                 item[node.type] = []
-                if('props' in node){
-                    for(let key in node.props){
+                if(_.keys(props).length > 0){
+                    for(let key in props){
                         if(key === 'children') continue
                         if(!(':@' in item))
                             item[':@'] = {}
-                        let val = node.props[key]
+                        let val = props[key]
                         // if ctx is '', no prefix is added.
                         if(key === 'name' && ctx)
                             // if val is '', only show prefix.
@@ -194,7 +204,7 @@ import(input_file).then(module => {
         'collapseContent': true,
         'forceSelfClosingEmptyTag': true,
     })
-    if(rootTag === 'sdf')
+    if(rootTag === 'sdf' || rootTag === "robot")
         wstr = '<?xml version="1.0" ?>\n'+wstr
     wstr = wstr.replaceAll('<newline/>','')
     fs.writeFileSync(path.join(pathInfo.dir,

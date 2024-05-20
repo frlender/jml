@@ -56,7 +56,7 @@ export default function Car() {
     <worldbody>
     <geom type="plane" size="3 3 .01" material="grid"/>
     <body name="car" pos="0 0 .03">
-        <freejoint/>
+        <freejoint />
         <light name="top light" pos="0 0 2" mode="trackcom" diffuse=".4 .4 .4"/>
         <geom name="chasis" type="mesh" mesh="chasis"/>
         <geom name="front wheel" pos=".08 0 -.015" type="sphere" size=".015" condim="1" priority="1"/>
@@ -82,3 +82,7 @@ export default function Car() {
     </sensor>
 </mujoco>
 }
+
+// const defaults = {'a':5}
+// export {defaults, Car}
+// export default Car

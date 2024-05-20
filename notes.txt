@@ -3,3 +3,9 @@ uncheck
 
 Problems: Visibility
 uncheck
+
+
+
+TODO:
+implement global defaults
+export {defaults, rootComponents}
