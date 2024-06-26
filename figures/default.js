@@ -63,14 +63,14 @@ export default function Component(){
 
 // Model.js
 const defaults = {
-  geom: {rgba: [1 0 0 1]},
-  joint: {damping: .03, actuatorfrcrange: "-0.5 0.5"}
+  color: {rgba: [1,0,0,1]},
+  cylinder: {length:.5}
 }
 function Model(){
   ...
-  return <mujoco>
+  return <robot>
     ...
-  </mujoco>
+  </robot>
 }
 export default {defaults,Model} 
 
