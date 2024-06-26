@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+    <model name="b_box">
+        <pose name="b">0 0 0.5 0 0 0</pose>
+        <static>false</static>
+        <attr>0 1 2</attr>
+        <attr2>5</attr2>
+        <link name="b_link"></link>
+        <joint type="revolute" name="b_my_joint"></joint>
+        <plugin filename="libMyPlugin.so" name="b_my_plugin"></plugin>
+    </model>
+    <dox></dox>
+</sdf>
