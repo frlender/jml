@@ -5,7 +5,7 @@ const consoleWarn = console.warn;
 const SUPPRESSED_WARNINGS = ['Each child in a list'];
 
 console.warn = function filterWarnings(msg, ...args) {
-    console.log('warnllll',msg)
+    // console.log('warnllll',msg)
     if (!SUPPRESSED_WARNINGS.some((entry) => msg.includes(entry))) {
         consoleWarn(msg, ...args);
     }
@@ -51,11 +51,11 @@ const ext = 'e' in argv ? argv.e : 'xml'
 
 
 import(input_file).then(module => {
-    console.log(module)
+    // console.log(module)
     async function parse(){
     const App = _.values(module)
                 .filter(x=>_.isFunction(x))[0]
-    console.log(App,'||', typeof(App),'||',App(),'||',<App/>)
+    // console.log(App,'||', typeof(App),'||',App(),'||',<App/>)
     // const AppObj = <App/>
     // App().then(obj=>{
     //     console.log(obj.type)
