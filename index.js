@@ -34,7 +34,7 @@ const input_file = argv._[0]
 const pathInfo = path.parse(input_file)
 
 
-const func = require("./serve2");
+const func = require("./jml");
 // const { on } = require("events");
 func(argv)
 if(argv.watch || argv.watchRecursive){
