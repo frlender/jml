@@ -3,7 +3,7 @@
 
 ## Install
 
-You should have [Node.js](https://nodejs.org/en/download/prebuilt-installer) installed on your computer. The tool is tested on Node.js v18.14.1 and v22.0.0. Any node version in between or above should work.
+You should have [Node.js](https://nodejs.org/en/download/prebuilt-installer) installed on your computer. The tool is tested on Node.js v18.14.1 and v22.0.0. Any Node.js version in between or above should work.
 
 1. Copy this repository to your computer using either `git clone` or downloading the zip file.
 2. Enter into the repository directory using the terminal and run `npm install` to install the dependencies.
