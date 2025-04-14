@@ -89,6 +89,7 @@ import(input_file).then(module => {
 
     async function hdlChildren(children,parent,ctx){
         // console.log('\\\\','\n',children)
+        if(!children) return
         if(_.isString(children) || _.isNumber(children))
             parent.push({'#text': children.toString()})
         else if(_.isArray(children))
@@ -104,8 +105,11 @@ import(input_file).then(module => {
     
     async function iter(node,parent,ctx){
         // console.log('===========================================')
+        // console.log(node)
         // console.log(node.type,'||',typeof(node.type),'||'
         // ,node.props,ctx,typeof(ctx))
+        // console.log(node.type,'||',typeof(node.type),'||'
+        // ,node.props)
 
         if(_.isArray(node)){
             node.map(x=>iter(x,parent,ctx))
@@ -159,7 +163,7 @@ import(input_file).then(module => {
                             val = val.join(' ')
                         item[':@'][`@_${key}`] = val
                     }
-                    if('children' in node.props ){
+                    if('children' in node.props){
                         await hdlChildren(node.props.children,
                             item[node.type],ctx)
                         // if(_.isString(node.props.children) ||
