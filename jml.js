@@ -5,9 +5,18 @@ const consoleWarn = console.warn;
 const SUPPRESSED_WARNINGS = ['Each child in a list'];
 
 console.warn = function filterWarnings(msg, ...args) {
-    // console.log('warnllll',msg)
+    // console.log('warnllll======',msg)
     if (!SUPPRESSED_WARNINGS.some((entry) => msg.includes(entry))) {
         consoleWarn(msg, ...args);
+    }
+};
+
+const consoleError = console.error;
+
+console.error = function filterWarnings(msg, ...args) {
+    // console.log('warnllll======',msg)
+    if (!SUPPRESSED_WARNINGS.some((entry) => msg.includes(entry))) {
+        consoleError(msg, ...args);
     }
 };
 
@@ -60,6 +69,7 @@ import(input_file).then(module => {
     // App().then(obj=>{
     //     console.log(obj.type)
     // })
+    // console.log('aa')
     // const rootTag = AppObj.type(AppObj.props).type
     const rootTag = (await App()).type
     // const rootTag = 'a'
@@ -184,9 +194,13 @@ import(input_file).then(module => {
                 parent.push(item)
             }
             // console.log(node.type)
-        }else
+        }else{
+            let new_ctx = node.props.name
+            if(ctx && node.props.name === '')
+                new_ctx = ctx 
             await iter(await node.type(node.props),parent,
-                node.props.name)
+                new_ctx)
+        }
     }
     
     await iter(<App/>,root)
