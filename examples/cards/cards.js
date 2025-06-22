@@ -42,7 +42,7 @@ export default async function Cards() {
       </>
   })
 
-  console.log(cards.length)
+  console.log('cards count:', cards.length)
 
   // console.log(cards)
   // console.log(filesSort)
